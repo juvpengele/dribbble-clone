@@ -17,3 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/', function() {
+    return ['status' => 'Application running'];
+});
+
+/**
+ * Auth
+ */
+Route::post('/register','AuthController@register')->name('auth.register');

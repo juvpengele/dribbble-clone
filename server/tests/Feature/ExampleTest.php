@@ -7,15 +7,12 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testBasicTest()
-    {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
+    /** @test */
+    public function a_guest_can_see_a_hello_world()
+    {
+        $response = $this->getJson('/api')->json();
+
+        $this->assertEquals('Application running', $response['status']);
     }
 }
