@@ -11,13 +11,18 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function getUserAttributes($attributes = []) : array
+    {
+        return array_merge(
+            factory(User::class)->raw($attributes),
+            ['tos' => 'on']
+        );
+    }
+
     /** @test */
     public function a_guest_can_sign_up()
     {
-        $userAttributes = array_merge(
-            factory(User::class)->raw(),
-            ['tos' => 'on']
-        );
+        $userAttributes = $this->getUserAttributes();
 
         $this->postJson(route('auth.register'), $userAttributes)
                         ->assertStatus(201)
@@ -29,7 +34,7 @@ class RegistrationTest extends TestCase
     /** @test */
     public function registration_requires_a_name()
     {
-        $userAttributes = factory(User::class)->raw(['name' => '']);
+        $userAttributes = $this->getUserAttributes(['name' => '']);
 
         ['errors' => $errors] = $this->postJson(route('auth.register'), $userAttributes)
             ->assertStatus(422)
@@ -42,7 +47,7 @@ class RegistrationTest extends TestCase
     /** @test */
     public function registration_requires_a_username()
     {
-        $userAttributes = factory(User::class)->raw(['username' => '']);
+        $userAttributes = $this->getUserAttributes(['username' => '']);
 
         ['errors' => $errors] = $this->postJson(route('auth.register'), $userAttributes)
             ->assertStatus(422)
@@ -109,5 +114,16 @@ class RegistrationTest extends TestCase
                                      ->assertStatus(422)->json();
 
         $this->assertContains('tos', array_keys($errors));
+    }
+
+    /** @test */
+    public function when_a_guest_sign_up_it_receives_a_token()
+    {
+        $userAttributes = $this->getUserAttributes();
+
+        $response = $this->postJson(route('auth.register'), $userAttributes)
+                         ->json();
+
+        $this->assertContains('api_token', array_keys($response['data']));
     }
 }

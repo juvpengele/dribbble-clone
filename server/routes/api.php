@@ -26,3 +26,4 @@ Route::get('/', function() {
  * Auth
  */
 Route::post('/register','AuthController@register')->name('auth.register');
+Route::post('/login','AuthController@login')->name('auth.login');

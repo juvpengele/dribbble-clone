@@ -6,6 +6,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class User extends JsonResource
 {
+    private $options;
+
+    public function __construct($resource, $options = [])
+    {
+        $this->options = $options;
+        parent::__construct($resource);
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -14,10 +22,10 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        return array_merge([
             'username' => $this->username,
             'name'   => $this->name,
-            'email' => $this->email
-        ];
+            'email' => $this->email,
+        ], $this->options);
     }
 }
