@@ -1,12 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import {Link} from "react-router-dom";
 
+import { request } from "../../utilities";
 import { useTitle } from "../../hooks";
 
 
 function Register(props) {
 
     useTitle("Register | Dribbble Clone");
+
+    const [inputs, setInputs] = useState({ name: "", username: "", email: "", password: "", tos: "on"});
+
+    function handleInputChange(event) {
+        setInputs({
+            ...inputs, [event.target.name]: event.target.value
+        });
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const user = register();
+
+        console.log(user);
+    }
+
+    async function register() {
+        const URI = "register";
+        try {
+            const { data } = await request().post(URI, inputs);
+            return data;
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <>
@@ -34,32 +62,40 @@ function Register(props) {
                         </div>
                     </div>
                     <div className="register__separator"/>
-                        <form action="">
+                        <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-6">
                                         <label htmlFor="name">Name</label>
-                                        <input type="text" className="form-control"/>
+                                        <input type="text" className="form-control"
+                                            name="name" value={inputs.name} onChange={handleInputChange}
+                                        />
                                     </div>
                                     <div className="col-6">
-                                        <label htmlFor="name">Username</label>
-                                        <input type="text" className="form-control"/>
+                                        <label htmlFor="username">Username</label>
+                                        <input type="text" className="form-control" id="username"
+                                               name="username" value={inputs.username} onChange={handleInputChange}
+                                        />
                                     </div>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-12">
-                                        <label htmlFor="name">Email</label>
-                                        <input type="email" className="form-control"/>
+                                        <label htmlFor="email">Email</label>
+                                        <input type="email" className="form-control" id="email"
+                                               name="email" value={inputs.email} onChange={handleInputChange}
+                                        />
                                     </div>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-12">
-                                        <label htmlFor="name">Password</label>
-                                        <input type="password" placeholder="6+ characters" className="form-control"/>
+                                        <label htmlFor="password">Password</label>
+                                        <input type="password" placeholder="6+ characters" className="form-control"
+                                               name="password" value={inputs.password} onChange={handleInputChange}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -78,8 +114,7 @@ function Register(props) {
                             </div>
                             <div className="form-group">
                                 <div className="col-12">
-                                    <button className="btn btn-pink btn-custom"
-                                            style={{ width: "200px"}}
+                                    <button className="btn btn-pink btn-custom" style={{ width: "200px"}}
                                     >Create Account</button>
                                 </div>
                             </div>
