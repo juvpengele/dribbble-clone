@@ -1,3 +1,11 @@
+@import "~line-awesome/dist/line-awesome/css/line-awesome.min.css";
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+@import './abstract/variables';
 @import "./abstract/global";
 
 @import "./layouts/sidebar";
+
+@import "./components/btn";
+
+@import "./pages/register";

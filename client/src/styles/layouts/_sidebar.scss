@@ -4,6 +4,8 @@ $fillColor: #a68238;;
     height: 100vh;
     min-height: 100vh;
     max-height: 100vh;
+    position: sticky;
+    top: 0;
 
     .logo {
         width: 90px;
