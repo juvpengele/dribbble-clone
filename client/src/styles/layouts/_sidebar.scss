@@ -1,0 +1,51 @@
+$fillColor: #a68238;;
+
+.sidebar {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+
+    .logo {
+        width: 90px;
+        fill: $fillColor;
+    }
+
+    &__title {
+        font-size: 1.7rem;
+        font-weight: bolder;
+        margin-top: 1.7rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__container {
+        width: 28rem;
+        margin: auto;
+        padding-top: 4rem;
+    }
+
+    &--login {
+        background-color: #f1cdd7;
+
+        .sidebar__title {
+            color: #865c6c;
+        }
+
+        .logo {
+            fill: #865c6c;
+        }
+
+    }
+
+    &--register {
+        background-color: #f2d184;
+
+        .sidebar__title {
+            color: #866118;
+        }
+
+        .logo {
+            fill: $fillColor;
+        }
+    }
+}
