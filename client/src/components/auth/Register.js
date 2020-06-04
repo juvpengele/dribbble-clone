@@ -18,22 +18,18 @@ function Register(props) {
         });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        const user = register();
+        const user = await register();
 
-        console.log(user);
     }
 
     async function register() {
-        const URI = "register";
-        console.log(inputs);
-        return;
         try {
-            const { data } = await request().post(URI, inputs);
-            return data;
+            const { data } = await request().post("register", inputs);
 
+            return data;
         } catch (error) {
             console.log(error);
         }
