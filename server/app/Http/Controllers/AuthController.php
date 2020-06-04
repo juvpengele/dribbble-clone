@@ -40,6 +40,19 @@ class AuthController extends Controller
             ]);
         }
 
-        return response()->json(["data" => ["api_token" => $token]]);
+        $user = User::find(request()->email);
+        
+        return $this->responseWithToken($user, $token);
+    }
+
+    /**
+     * @param $user
+     * @param string $token
+     * @return UserResource
+     */
+    private function responseWithToken($user, string $token): UserResource
+    {
+        return new UserResource($user, ['api_token' => $token]);
+>>>>>>> develop
     }
 }
