@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import {Link} from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { request } from "../../utilities";
 import { useTitle } from "../../hooks";
+import { login } from "../../actions/auth";
 
 function Register(props) {
 
@@ -22,7 +24,7 @@ function Register(props) {
         event.preventDefault();
 
         const user = await register();
-
+        props.login(user.data);
     }
 
     async function register() {
@@ -125,4 +127,10 @@ function Register(props) {
     )
 }
 
-export default Register;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        login: (user) => dispatch(login(user))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(withRouter(Register));
