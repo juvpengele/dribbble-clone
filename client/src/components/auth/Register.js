@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import {Link} from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { request } from "../../utilities";
 import { useTitle } from "../../hooks";
+import { login } from "../../actions/auth";
 
 function Register(props) {
 
-    useTitle("Register | Dribbble Clone");
+    const initialInputs = { name: "", username: "", email: "", password: "", tos: "on"};
+    const [inputs, setInputs] = useState(initialInputs);
+    const [loading, setLoading] = useState(false);
 
-    const [inputs, setInputs] = useState({
-        name: "", username: "", email: "", password: "", tos: "on"
-    });
+    useTitle("Register | Dribbble Clone");
 
     function handleInputChange(event) {
         setInputs({
@@ -18,25 +20,37 @@ function Register(props) {
         });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
+        const user = await register();
 
-        const user = register();
-
-        console.log(user);
+        _clearForm();
+        props.login(user.data);
+        props.history.push("/");
     }
 
     async function register() {
-        const URI = "register";
-        console.log(inputs);
-        return;
         try {
-            const { data } = await request().post(URI, inputs);
-            return data;
+            const { data } = await request().post("register", inputs);
 
+            return data;
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    function _clearForm() {
+        setInputs(initialInputs);
+    }
+
+    function getButtonText() {
+        if(loading) {
+            return "Loading...";
+        }
+
+        return "Create account";
     }
 
     return (
@@ -117,8 +131,7 @@ function Register(props) {
                             </div>
                             <div className="form-group">
                                 <div className="col-12">
-                                    <button className="btn btn-pink btn-custom" style={{ width: "200px"}}
-                                    >Create Account</button>
+                                    <button className="btn btn-pink btn-custom" style={{ width: "200px"}}>{ getButtonText() }</button>
                                 </div>
                             </div>
                         </form>
@@ -129,4 +142,10 @@ function Register(props) {
     )
 }
 
-export default Register;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        login: (user) => dispatch(login(user))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(withRouter(Register));

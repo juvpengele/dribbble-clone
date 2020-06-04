@@ -24,7 +24,7 @@ class AuthController extends Controller
         $user = User::create(request()->all());
         $token = auth()->tokenById($user->id);
 
-        return new UserResource($user, ['api_token' => $token]);
+        return $this->responseWithToken($user, $token);
     }
 
     public function login()
@@ -40,6 +40,18 @@ class AuthController extends Controller
             ]);
         }
 
-        return response()->json(["data" => ["api_token" => $token]]);
+        $user = User::find(request()->email);
+
+        return $this->responseWithToken($user, $token);
+    }
+
+    /**
+     * @param $user
+     * @param string $token
+     * @return UserResource
+     */
+    private function responseWithToken($user, string $token): UserResource
+    {
+        return new UserResource($user, ['api_token' => $token]);
     }
 }
