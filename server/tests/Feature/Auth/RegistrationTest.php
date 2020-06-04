@@ -15,7 +15,7 @@ class RegistrationTest extends TestCase
     {
         return array_merge(
             factory(User::class)->raw($attributes),
-            ['tos' => 'on']
+            ['tos'=> 'on']
         );
     }
 
@@ -119,6 +119,7 @@ class RegistrationTest extends TestCase
     /** @test */
     public function when_a_guest_sign_up_it_receives_a_token()
     {
+
         $userAttributes = $this->getUserAttributes();
 
         $response = $this->postJson(route('auth.register'), $userAttributes)

@@ -4,12 +4,13 @@ import {Link} from "react-router-dom";
 import { request } from "../../utilities";
 import { useTitle } from "../../hooks";
 
-
 function Register(props) {
 
     useTitle("Register | Dribbble Clone");
 
-    const [inputs, setInputs] = useState({ name: "", username: "", email: "", password: "", tos: "on"});
+    const [inputs, setInputs] = useState({
+        name: "", username: "", email: "", password: "", tos: "on"
+    });
 
     function handleInputChange(event) {
         setInputs({
@@ -27,6 +28,8 @@ function Register(props) {
 
     async function register() {
         const URI = "register";
+        console.log(inputs);
+        return;
         try {
             const { data } = await request().post(URI, inputs);
             return data;

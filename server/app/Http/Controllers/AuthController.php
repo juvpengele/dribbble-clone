@@ -22,28 +22,24 @@ class AuthController extends Controller
         ]);
 
         $user = User::create(request()->all());
-        $token = $user->createToken(request('email'));
+        $token = auth()->tokenById($user->id);
 
-        return new UserResource($user, ['api_token' => $token->plainTextToken]);
+        return new UserResource($user, ['api_token' => $token]);
     }
 
     public function login()
     {
-        request()->validate([
+        $credentials = request()->validate([
             'email' => 'required|email|exists:users',
             'password' => 'required'
         ]);
 
-        $user = User::whereEmail(request('email'))->first();
-
-        if(! Hash::check(request('password'), $user->password)) {
+        if (! $token = auth()->attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => ['Your credentials do not match with our records']
             ]);
         }
 
-        $token = $user->createToken(request('email'));
-
-        return new UserResource($user, ['api_token' => $token->plainTextToken]);
+        return response()->json(["data" => ["api_token" => $token]]);
     }
 }
