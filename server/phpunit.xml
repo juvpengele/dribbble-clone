@@ -27,5 +27,6 @@
         <server name="SESSION_DRIVER" value="array"/>
         <server name="DB_CONNECTION" value="sqlite"/>
         <server name="DB_DATABASE" value=":memory:"/>
+        <server name="JWT_SECRET" value="JWT_SECRET=dSQAuRp9OPvnhyH2y6xP69vuR1knqwrvAAyp3B67haJah14dvvEUeXTXlfZXu3Cx"/>
     </php>
 </phpunit>
