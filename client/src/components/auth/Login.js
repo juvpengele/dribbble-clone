@@ -2,36 +2,56 @@ import React, {useState} from "react";
 import { Link } from "react-router-dom";
 import { useTitle } from "../../hooks";
 import {request} from "../../utilities";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { handleFormErrors } from "../../utilities/helpers";
+
 
 function Login(props) {
 
     useTitle("Login | Dribbble Clone");
 
-    const [inputs, setInputs] = useState({ name: "", username: "", email: "", password: "", tos: "on"});
+    const attributes = { email: "", password: ""};
+    const validationSchema = Yup.object().shape({
+       email: Yup.string().required("This username / login field is required").min(2, "The username / login field must have at least 2 characters"),
+       password: Yup.string().required("The password field is required").min(6, "The password field must have at least 6 characters")
+    });
+    const formik = useFormik({
+        validationSchema, initialValues: attributes, onSubmit: handleSubmit
+    });
+    const [loading, setLoading] = useState(false);
 
-    function handleInputChange(event) {
-        setInputs({
-            ...inputs, [event.target.name]: event.target.value
-        });
+    async function handleSubmit(formValues) {
+
+        const user = await login(formValues);
+
+        if(user) {
+            console.log(user);
+        }
     }
 
-    function handleSubmit(event) {
-        event.preventDefault();
-
-        const user = register();
-
-        console.log(user);
-    }
-
-    async function register() {
-        const URI = "register";
+    async function login(formAttributes) {
+        setLoading(true);
         try {
-            const { data } = await request().post(URI, inputs);
+            const { data } = await request().post("login", formAttributes);
             return data;
 
         } catch (error) {
-            console.log(error);
+            if(error.response.data) {
+                handleFormErrors(error.response.data, formik);
+            }
+
+            return null
+        } finally {
+            setLoading(false);
         }
+    }
+
+    function getButtonText() {
+        if(loading) {
+            return "Loading...";
+        }
+        return "Sign In";
     }
 
     return (
@@ -45,7 +65,7 @@ function Login(props) {
                 <div className="row">
 
                     <div className="col-md-7 mx-auto">
-                        <h2 className="register__title">Sign up to Dribbble</h2>
+                        <h2 className="register__title">Sign in to Dribbble</h2>
                         <div className="row">
                             <div className="col-10">
                                 <a href="#" className="btn btn-primary w-100 font-weight-bold">
@@ -60,14 +80,21 @@ function Login(props) {
                             </div>
                         </div>
                         <div className="register__separator"/>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={formik.handleSubmit}>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-12">
                                         <label htmlFor="email">Username or Email</label>
-                                        <input type="email" className="form-control" id="email"
-                                               name="email" value={inputs.email} onChange={handleInputChange}
+                                        <input type="text" className="form-control" id="email"
+                                               value={formik.values.email}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
                                         />
+                                        {
+                                            formik.touched.email && formik.errors.email &&
+                                            <span className="text-danger">{ formik.errors.email}</span>
+                                        }
+
                                     </div>
                                 </div>
                             </div>
@@ -76,16 +103,24 @@ function Login(props) {
                                     <div className="col-12">
                                         <label htmlFor="password">Password</label>
                                         <input type="password" className="form-control"
-                                               name="password" value={inputs.password} onChange={handleInputChange}
+                                               id="password"
+                                               value={formik.values.password}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
                                         />
+                                        {
+                                            formik.touched.password && formik.errors.password &&
+                                            <span className="text-danger">{ formik.errors.password}</span>
+                                        }
                                     </div>
                                 </div>
                             </div>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-12">
-                                        <button className="btn btn-pink btn-custom" style={{ width: "200px"}}
-                                        >Sign In</button>
+                                        <button className="btn btn-pink btn-custom"
+                                                style={{ width: "200px"}} type="submit"
+                                        >{ getButtonText() }</button>
                                     </div>
                                 </div>
                             </div>
