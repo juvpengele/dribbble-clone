@@ -1,6 +1,7 @@
 import { LOGOUT, LOGIN } from "../actions/types";
+import Storage from "../utilities/Storage";
 
-const INITIAL_STATE = null;
+const INITIAL_STATE = Storage.get("auth");
 
 export default function authReducer(state = INITIAL_STATE, action) {
     switch (action.type) {

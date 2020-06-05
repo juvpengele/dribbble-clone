@@ -14,9 +14,9 @@ function Login(props) {
 
     useTitle("Login | Dribbble Clone");
 
-    const attributes = { email: "", password: ""};
+    const attributes = { login: "", password: ""};
     const validationSchema = Yup.object().shape({
-       email: Yup.string().required("This username / login field is required").min(2, "The username / login field must have at least 2 characters"),
+       login: Yup.string().required("The username / login field is required").min(2, "The username / login field must have at least 2 characters"),
        password: Yup.string().required("The password field is required").min(6, "The password field must have at least 6 characters")
     });
     const formik = useFormik({
@@ -29,7 +29,7 @@ function Login(props) {
         const user = await signIn(formValues);
 
         if(user) {
-            props.login(user);
+            props.login(user.data);
             props.history.push("/");
         }
     }
@@ -88,15 +88,15 @@ function Login(props) {
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-12">
-                                        <label htmlFor="email">Username or Email</label>
-                                        <input type="text" className="form-control" id="email"
-                                               value={formik.values.email}
+                                        <label htmlFor="login">Username or Email</label>
+                                        <input type="text" className="form-control" id="login"
+                                               value={formik.values.login}
                                                onChange={formik.handleChange}
                                                onBlur={formik.handleBlur}
                                         />
                                         {
-                                            formik.touched.email && formik.errors.email &&
-                                            <span className="text-danger">{ formik.errors.email}</span>
+                                            formik.touched.login && formik.errors.login &&
+                                            <span className="text-danger">{ formik.errors.login}</span>
                                         }
 
                                     </div>
