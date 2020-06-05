@@ -30,17 +30,21 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request()->validate([
-            'email' => 'required',
+            'login' => 'required',
             'password' => 'required'
         ]);
 
-        if (! $token = auth()->attempt($credentials)) {
+        $user = User::where(['email' => $credentials['login']])
+                ->orWhere(['username' => $credentials['login']])
+                ->first();
+
+        if(! $user) {
             throw ValidationException::withMessages([
-                'email' => ['Your credentials do not match with our records']
+                'login' => ['Your username / email does exist in our records']
             ]);
         }
 
-        $user = User::find(request()->email);
+        $token = $this->attemptLogin(["email" => $user->email, "password" => $credentials["password"]]);
 
         return $this->responseWithToken($user, $token);
     }
@@ -53,5 +57,17 @@ class AuthController extends Controller
     private function responseWithToken($user, string $token): UserResource
     {
         return new UserResource($user, ['api_token' => $token]);
+    }
+
+    private function attemptLogin(array $credentials) : string
+    {
+
+        if(! $token = auth()->attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'login' => ['Your credentials do not match with our records']
+            ]);
+        }
+
+        return $token;
     }
 }
