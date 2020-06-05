@@ -21,9 +21,10 @@ class Storage {
 
         try {
             element = JSON.parse(element);
-        } catch(error) {}
-
-        return element;
+            return element;
+        } catch(error) {
+            return null;
+        }
     }
 
     remove(key) {

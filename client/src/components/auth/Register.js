@@ -5,12 +5,24 @@ import { connect } from "react-redux";
 import { request } from "../../utilities";
 import { useTitle } from "../../hooks";
 import { login } from "../../actions/auth";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { handleFormErrors } from "../../utilities/helpers"
 
 function Register(props) {
-
     const initialInputs = { name: "", username: "", email: "", password: "", tos: "on"};
     const [inputs, setInputs] = useState(initialInputs);
     const [loading, setLoading] = useState(false);
+    const validationSchema = Yup.object().shape({
+        name: Yup.string().required("The name is required").min(2, "The name must have at least 2 characters"),
+        username: Yup.string().required("The username is required").min(2, "The username must have at least 2 characters"),
+        email: Yup.string().required("The email is required").email("You must provide a valid email adress"),
+        password: Yup.string().required("The password is required").min(6, "The password must have at least 6 characters")
+    });
+    const formik = useFormik({
+        initialValues: initialInputs, onSubmit: handleSubmit, validationSchema
+    });
+
 
     useTitle("Register | Dribbble Clone");
 
@@ -20,22 +32,29 @@ function Register(props) {
         });
     }
 
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const user = await register();
+    async function handleSubmit(attributes) {
 
-        _clearForm();
-        props.login(user.data);
-        props.history.push("/");
+        const user = await register(attributes);
+
+        if(user) {
+            _clearForm();
+            props.login(user.data);
+            props.history.push("/");
+        }
     }
 
-    async function register() {
+    async function register(attributes) {
         try {
-            const { data } = await request().post("register", inputs);
+            const { data } = await request().post("register", {
+                ...attributes, tos: "on"
+            });
 
             return data;
         } catch (error) {
-            console.log(error);
+            if(error.response.data){
+                handleFormErrors(error.response.data, formik);
+            }
+           return null;
         } finally {
             setLoading(false);
         }
@@ -79,20 +98,34 @@ function Register(props) {
                         </div>
                     </div>
                     <div className="register__separator"/>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={formik.handleSubmit}>
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-6">
                                         <label htmlFor="name">Name</label>
-                                        <input type="text" className="form-control"
-                                            name="name" value={inputs.name} onChange={handleInputChange}
+                                        <input type="text" className="form-control" id="name"
+                                               name="name"
+                                               value={formik.values.name}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
                                         />
+                                        {
+                                            formik.touched.name && formik.errors.name &&
+                                            <span className="text-danger">{ formik.errors.name}</span>
+                                        }
+
                                     </div>
                                     <div className="col-6">
                                         <label htmlFor="username">Username</label>
                                         <input type="text" className="form-control" id="username"
-                                               name="username" value={inputs.username} onChange={handleInputChange}
+                                               name="username" value={formik.values.username}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
                                         />
+                                        {
+                                            formik.touched.username && formik.errors.username &&
+                                            <span className="text-danger">{ formik.errors.username}</span>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -101,8 +134,14 @@ function Register(props) {
                                     <div className="col-12">
                                         <label htmlFor="email">Email</label>
                                         <input type="email" className="form-control" id="email"
-                                               name="email" value={inputs.email} onChange={handleInputChange}
+                                               name="email" value={formik.values.email}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
                                         />
+                                        {
+                                            formik.touched.email && formik.errors.email &&
+                                            <span className="text-danger">{ formik.errors.email}</span>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -110,9 +149,17 @@ function Register(props) {
                                 <div className="row">
                                     <div className="col-12">
                                         <label htmlFor="password">Password</label>
-                                        <input type="password" placeholder="6+ characters" className="form-control"
-                                               name="password" value={inputs.password} onChange={handleInputChange}
+                                        <input type="password" placeholder="6+ characters"
+                                               className="form-control"
+                                               value={formik.values.password}
+                                               onChange={formik.handleChange}
+                                               onBlur={formik.handleBlur}
+                                               id="password"
                                         />
+                                        {
+                                            formik.touched.password && formik.errors.password &&
+                                            <span className="text-danger">{ formik.errors.password}</span>
+                                        }
                                     </div>
                                 </div>
                             </div>

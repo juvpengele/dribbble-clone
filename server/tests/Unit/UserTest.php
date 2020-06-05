@@ -8,5 +8,9 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-
+    /** @test */
+    public function it_passes()
+    {
+        $this->assertTrue(true);
+    }
 }
