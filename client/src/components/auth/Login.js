@@ -5,6 +5,9 @@ import {request} from "../../utilities";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { handleFormErrors } from "../../utilities/helpers";
+import { login } from "../../actions/auth";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 
 function Login(props) {
@@ -23,14 +26,15 @@ function Login(props) {
 
     async function handleSubmit(formValues) {
 
-        const user = await login(formValues);
+        const user = await signIn(formValues);
 
         if(user) {
-            console.log(user);
+            props.login(user);
+            props.history.push("/");
         }
     }
 
-    async function login(formAttributes) {
+    async function signIn(formAttributes) {
         setLoading(true);
         try {
             const { data } = await request().post("login", formAttributes);
@@ -41,7 +45,7 @@ function Login(props) {
                 handleFormErrors(error.response.data, formik);
             }
 
-            return null
+            return null;
         } finally {
             setLoading(false);
         }
@@ -132,4 +136,10 @@ function Login(props) {
     )
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => ({
+   login(user) {
+       dispatch(login(user));
+   }
+});
+
+export default connect(null, mapDispatchToProps)(withRouter(Login));
