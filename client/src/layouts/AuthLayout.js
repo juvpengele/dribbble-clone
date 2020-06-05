@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-
 import Sidebar from "../components/layouts/auth/Sidebar";
 
+
 function AuthLayout(props) {
+
+    useEffect(() => {
+        if(props.auth) {
+            props.history.push('/');
+        }
+    }, []);
+
+
     return (
         <Container fluid>
             <Row>
@@ -20,4 +30,6 @@ function AuthLayout(props) {
     )
 }
 
-export default AuthLayout;
+const mapStateToProps = ({ auth }) => ({ auth });
+
+export default connect(mapStateToProps,null)(withRouter(AuthLayout));

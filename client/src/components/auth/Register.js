@@ -7,6 +7,7 @@ import { useTitle } from "../../hooks";
 import { login } from "../../actions/auth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { handleFormErrors } from "../../utilities/helpers"
 
 function Register(props) {
     const initialInputs = { name: "", username: "", email: "", password: "", tos: "on"};
@@ -51,20 +52,11 @@ function Register(props) {
             return data;
         } catch (error) {
             if(error.response.data){
-                _handleErrors(error.response.data);
+                handleFormErrors(error.response.data, formik);
             }
            return null;
         } finally {
             setLoading(false);
-        }
-    }
-
-    function _handleErrors(formErrors) {
-        console.log(formErrors);
-        const { errors } = formErrors;
-
-        for(let error in errors) {
-            formik.errors[error] = errors[error][0];
         }
     }
 
